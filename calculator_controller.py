@@ -1,68 +1,84 @@
 ###########################
-# 1. import flask library 
-# HINT: sample/request_processing.py
+# 1. import flask library
 ###########################
 import service.calculator as calculator
 from http import HTTPStatus
-
-from flask import jsonify
-
+from flask import Flask, request, jsonify
 
 ###########################
 # 2. initialize your Flask application object
-# HINT: sample/explicit_application_object.py
 ###########################
-app = 
-
-
+app = Flask(__name__)
 
 ###########################
-# 3. define route paths for the following functions with the specified path and method
-# HINT: sample/routing.py
-# 4. and parse the request to get the user_input given the request type
-# HINT: sample/request_processing.py
+# 4. define route paths for the following functions with the specified path and method
+# 5. and parse the request to get the user_input
 ###########################
-
 
 # path = '/mean', method = 'GET'
 # request type = JSON
+@app.route('/mean',methods=['GET'])
 def mean():
-	# user_input = 
-	
-	results = calculator.mean(user_input)
+    user_input = request.get_json()['input']
+    results = calculator.mean(user_input)
+    return jsonify({'output':results}), HTTPStatus.OK
 
-	return jsonify({'output':results}), HTTPStatus.OK
 
 
 # path = '/median', method = 'GET and POST'
 # request type = Query
+@app.route('/median',methods=['GET','POST'])
 def median():
-	# user_input = 
+    user_input = request.args.get('input')
+    user_input = list(map(int, user_input.split(',')))
+    results = calculator.median(user_input)
+    return jsonify({'output':results}), HTTPStatus.OK
 
-	user_input = list(map(int, user_input.split(',')))
-	results = calculator.median(user_input)
 
-	return jsonify({'output':results}), HTTPStatus.OK
 
 # path = '/mode', method = 'POST'
 # request type = Form
+@app.route('/mode',methods=['POST'])
 def mode():
-	# user_input = 
+    user_input = request.form.get('input')
+    user_input = list(map(int, user_input))
+    results = calculator.mode(user_input)
+    return jsonify({'output':results}), HTTPStatus.OK
 
-	user_input = list(map(int, user_input))
-	results = calculator.mode(user_input)
 
-	return jsonify({'output':results}), HTTPStatus.OK
+
+# path = '/minimum', method = 'GET and POST'
+# request type = Query
+@app.route('/minimum',methods=['GET','POST'])
+def minimum():
+    user_input = request.args.get('input')
+    user_input = list(map(int, user_input.split(',')))
+    results = min(user_input)
+    return jsonify({'output':results}), HTTPStatus.OK
+
+
+
+# path = '/maximum', method = 'GET and POST'
+# request type = Query
+@app.route('/maximum',methods=['GET','POST'])
+def maximum():
+    user_input = request.args.get('input')
+    user_input = list(map(int, user_input.split(',')))
+    results = max(user_input)
+    return jsonify({'output':results}), HTTPStatus.OK
+
 
 
 # path = '/status', method = 'GET'
+@app.route('/status')
 def status():
-	result = "Application is running"
-	return result, HTTPStatus.OK
+    result = "Application is running"
+    return result, HTTPStatus.OK
+
 
 
 if __name__ == '__main__':
-	###########################
-	# 5. Start your flask app
-	# HINT: sample/explicit_application_object.py
-	###########################
+    ###########################
+    # 3. Start your flask app
+    ###########################
+    app.run(host='0.0.0.0',port=8080)
